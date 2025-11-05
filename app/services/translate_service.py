@@ -1,15 +1,10 @@
-import boto3
 from botocore.exceptions import BotoCoreError, ClientError
-from app.config.environment import (
-    settings,
-) 
+from app.config.aws_client import get_translate_client
 
 
 class TranslateService:
     def __init__(self):
-        # Si estás en AWS (App Runner o ECS), no necesitas pasar credenciales
-        # boto3 usa automáticamente las credenciales del IAM Role
-        self.client = boto3.client("translate", region_name=settings.AWS_REGION)
+        self.client = get_translate_client()
 
     def translate_text(self, text: str, source: str, target: str) -> str:
         try:

@@ -22,6 +22,13 @@ async def translate_text(
             source=request.source_language,
             target=request.target_language,
         )
+
+        if not response:
+            return error_response(
+                message="No se pudo realizar la traducción",
+                status_code=500,
+            )
+
         return success_response(
             data={"translated_text": response},
             message="Traducción realizada exitosamente",
