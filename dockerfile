@@ -1,16 +1,17 @@
+# 🧩 Etapa 1: build
 FROM python:3.11-slim AS builder
 
 WORKDIR /app
 
-# Evita que Python genere archivos .pyc
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+# Evita que Python genere archivos .pyc y usa stdout sin buffer
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Copia e instala las dependencias de Python
+# Copia e instala dependencias de Python
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install --prefix=/install -r requirements.txt
 
@@ -32,4 +33,4 @@ EXPOSE 8000
 ENV ENVIRONMENT=production
 
 # Comando por defecto (usa múltiples workers con Uvicorn)
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
