@@ -16,7 +16,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()  # type: ignore
-
-if settings.ENVIRONMENT == "production":
-    os.environ.pop("AWS_ACCESS_KEY_ID", None)
-    os.environ.pop("AWS_SECRET_ACCESS_KEY", None)

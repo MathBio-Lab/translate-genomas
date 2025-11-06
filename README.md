@@ -42,6 +42,48 @@ docker run --rm -p 9000:8080 \
   -v ~/.aws:/root/.aws:ro \
   mi-lambda-local
 
+
+docker run --rm -p 9000:8080 \
+  -e ENVIRONMENT=development \
+  -e AWS_REGION=us-east-2 \
+  -v ~/.aws:/root/.aws:ro \
+  mi-lambda-local
+
+
+# validar credenciales 
+
+docker exec -it $(docker ps -q -f publish=9000) bash
+
+
+python - <<'PYCODE'
+import boto3, json
+try:
+    sts = boto3.client("sts")
+    identity = sts.get_caller_identity()
+    print("✅ Credenciales detectadas correctamente:")
+    print(json.dumps(identity, indent=2))
+except Exception as e:
+    print("❌ No se detectaron credenciales:", e)
+PYCODE
+
+
+
+# verificar servicio
+
+python - <<'PYCODE'
+import boto3
+translate = boto3.client("translate", region_name="us-east-2")
+result = translate.translate_text(
+    Text="Hello world!",
+    SourceLanguageCode="en",
+    TargetLanguageCode="es"
+)
+print("✅ Traducción:", result["TranslatedText"])
+PYCODE
+
+
+
+
 el curl:
 
 ```bash
@@ -76,3 +118,8 @@ curl -X POST "http://localhost:9000/2015-03-31/functions/function/invocations" -
 ```
 
 logar y docker buildx build --platform linux/amd64 -t <link-repo> --push .
+
+
+ANY /{proxy+}
+
+$default 
